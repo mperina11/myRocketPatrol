@@ -12,7 +12,7 @@ class Play extends Phaser.Scene {
         this.load.spritesheet('explosion', 'assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
 
         // MOD ---------------
-        // this.load.image('rocket2', 'assets/rocket2.png');
+        this.load.image('rocket2', 'assets/rocket2.png');
         this.load.image('fire eye', 'gallery/fire_eye2.png');
         this.load.image('rainbow', 'gallery/water2.png');
         this.load.image('spark0', 'assets/blue.png');
@@ -37,7 +37,9 @@ class Play extends Phaser.Scene {
         // rocket
         this.p1Rocket = new Rocket(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'rocket').setOrigin(0.5, 0);
         // rocket2 here
-        // rocket holder = p1Rocket for now
+        this.p2Rocket = new Rocket(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'rocket2').setOrigin(0.5, 0);
+        // rocket holder
+        this.rocket_holder = new Rocket(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'rocket').setOrigin(0.5, 0);
 
         // keys/input setup 
         keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
@@ -111,6 +113,8 @@ class Play extends Phaser.Scene {
         // init time
         this.p1time = 0;
         this.add_time = 0;
+        this.to_ten = 0; // track 0-10 points
+        this.rocket_flag = 0; // track rocket in use, 0=1, 1=2
         // // display time
         let timeConfig = {
             fontFamily: 'Courier',
@@ -164,15 +168,20 @@ class Play extends Phaser.Scene {
         this.starfield.tilePositionX -= 16; // was 4
 
         // rocket switcher
-        // if (this.add_time >= 10) {
-        //     rocket holder = rocket 2
+        console.log(this.to_ten);
+        if (this.to_ten >= 25) {
+            this.rocket_holder = this.p2Rocket;
+            this.to_ten = 0; // reset
+            this.rocket_flag = 1;
+        }
+        // else { // switch back
+        //     this.rocket_holder = this.p1Rocket;
+        //     this.rocket_flag = 0;
         // }
-            // else {
-                // rocket holder = rocket 1
-            // }
 
+            
         if (!this.gameOver) {
-            this.p1Rocket.update(this.add_time);
+            this.rocket_holder.update(this.rocket_flag);
             this.ship01.update();
             this.ship02.update();
             this.ship03.update();
@@ -181,23 +190,23 @@ class Play extends Phaser.Scene {
             // update time                   
             this.p1time = this.clock.now;
             this.timeLeft.text = this.p1time;           
-        }        
+        }       
 
         // check collisions
-        if(this.checkCollision(this.p1Rocket, this.ship04)) {
-            this.p1Rocket.reset();
+        if(this.checkCollision(this.rocket_holder, this.ship04)) {
+            this.rocket_holder.reset();
             this.shipExplode(this.ship04);
         }
-        if(this.checkCollision(this.p1Rocket, this.ship03)) {
-            this.p1Rocket.reset();
+        if(this.checkCollision(this.rocket_holder, this.ship03)) {
+            this.rocket_holder.reset();
             this.shipExplode(this.ship03);
         }
-        if (this.checkCollision(this.p1Rocket, this.ship02)) {
-            this.p1Rocket.reset();
+        if (this.checkCollision(this.rocket_holder, this.ship02)) {
+            this.rocket_holder.reset();
             this.shipExplode(this.ship02);
         }
-        if (this.checkCollision(this.p1Rocket, this.ship01)) {
-            this.p1Rocket.reset();
+        if (this.checkCollision(this.rocket_holder, this.ship01)) {
+            this.rocket_holder.reset();
             this.shipExplode(this.ship01);
         }
     }
@@ -243,6 +252,7 @@ class Play extends Phaser.Scene {
         //this.p1time += ship.points / 10;
         //this.timeLeft.text = this.p1time;
         this.add_time += ship.points / 10;
+        this.to_ten += ship.points / 10;
 
         // sound
         this.sound.play('sfx_explosion')
