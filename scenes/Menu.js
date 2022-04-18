@@ -10,6 +10,7 @@ class Menu extends Phaser.Scene {
         this.load.audio('sfx_select', 'assets/blip_select12.wav');
         this.load.audio('sfx_explosion', 'assets/explosion38.wav');
         this.load.audio('sfx_rocket', 'assets/rocket_shot.wav');
+        //scene.load.plugin('rexclockplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexclockplugin.min.js', true);
       }
 
     create() {
@@ -34,6 +35,9 @@ class Menu extends Phaser.Scene {
         // define keys
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+
+        // create clock
+        //this.clock = this.plugins.get('rexclockplugin').add(this);
     }
 
     update() {
@@ -41,7 +45,7 @@ class Menu extends Phaser.Scene {
           // easy mode
           game.settings = {
             spaceshipSpeed: 3,
-            gameTimer: 60000    
+            gameTimer: 10000    // 60000
           }
           this.sound.play('sfx_select');
           this.scene.start('playScene');    
@@ -50,10 +54,11 @@ class Menu extends Phaser.Scene {
           // hard mode
           game.settings = {
             spaceshipSpeed: 4,
-            gameTimer: 45000    
+            gameTimer: 10000    // 45000
           }
           this.sound.play('sfx_select');
-          this.scene.start('playScene');    
+          this.scene.start('playScene');              
+          //this.clock.start(); // start clock
         }
       }
 }
