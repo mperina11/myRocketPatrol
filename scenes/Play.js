@@ -135,6 +135,9 @@ class Play extends Phaser.Scene {
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
             this.scene.start("menuScene");
         }
+        else if (this.gameOver && this.clock.now >= ((this.game.settings.gameTimer + (this.add_time * 1000)) + 5000)) { // return anyway, 5s
+            this.scene.start("menuScene");
+        }
 
         this.starfield.tilePositionX -= 16; // was 4
 
