@@ -14,14 +14,15 @@ class Play extends Phaser.Scene {
         // MOD ---------------
         this.load.image('fire eye', 'gallery/fire_eye2.png');
         this.load.image('rainbow', 'gallery/rainbow2.png');
+        this.load.image('spark0', 'assets/blue.png');
+        this.load.image('spark1', 'assets/red.png');
         this.load.plugin('rexclockplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexclockplugin.min.js', true);        
 
     }
 
     create() {
 
-        // title sprite
-        //this.starfield = this.add.tileSprite(0, 0, 640, 480, 'starfield').setOrigin(0, 0);
+        // title sprite        
         this.starfield = this.add.tileSprite(0, 0, 640, 480, 'rainbow').setOrigin(0, 0);
         
         // green UI background
@@ -48,11 +49,37 @@ class Play extends Phaser.Scene {
         this.ship04 = new Spaceship(this, game.config.width + borderUISize*9, borderUISize*4                  , 'spaceship', 0, 40, 3).setOrigin(0, 0); // special, top
         
 
+        // create anim
         this.anims.create({
             key: 'explode',
             frames: this.anims.generateFrameNumbers('explosion', {start: 0, end: 9, first: 0}),
             framRate: 30
         })
+
+        // Particle Emitter
+        this.emitter0 = this.add.particles('spark0').createEmitter({
+            x: 400,
+            y: 300,
+            speed: { min: -800, max: 800 },
+            angle: { min: 0, max: 360 },
+            scale: { start: 0.5, end: 0 },
+            blendMode: 'SCREEN',            
+            on: false,
+            lifespan: 600,
+            gravityY: 800
+        });
+    
+        this.emitter1 = this.add.particles('spark1').createEmitter({
+            x: 400,
+            y: 300,
+            speed: { min: -800, max: 800 },
+            angle: { min: 0, max: 360 },
+            scale: { start: 0.3, end: 0 },
+            blendMode: 'SCREEN',
+            on: false,
+            lifespan: 300,
+            gravityY: 800
+        });
 
         // init score
         this.p1Score = 0;
@@ -74,14 +101,6 @@ class Play extends Phaser.Scene {
 
         // GAME OVER flag
         this.gameOver = false;
-        // 60-second play clock
-        // scoreConfig.fixedWidth = 0;
-        // this.clock = this.time.delayedCall(game.settings.gameTimer, () => {
-        //     this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
-        //     this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or <- for Menu', scoreConfig).setOrigin(0.5);
-        //     this.gameOver = true;
-        // }, null, this);
-
 
         // create clock
         this.clock = this.plugins.get('rexclockplugin').add(this);
@@ -195,6 +214,15 @@ class Play extends Phaser.Scene {
           ship.alpha = 1;                       // make ship visible again
           boom.destroy();                       // remove explosion sprite
         });       
+
+        // Emitter Explosion
+        this.emitter0.setPosition(ship.x, ship.y);
+        this.emitter1.setPosition(ship.x, ship.y);
+        this.emitter0.explode();
+        this.emitter1.explode();
+        ship.reset();
+        ship.alpha = 1;
+
 
         // add points
         this.p1Score += ship.points;
