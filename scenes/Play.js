@@ -12,8 +12,9 @@ class Play extends Phaser.Scene {
         this.load.spritesheet('explosion', 'assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
 
         // MOD ---------------
+        // this.load.image('rocket2', 'assets/rocket2.png');
         this.load.image('fire eye', 'gallery/fire_eye2.png');
-        this.load.image('rainbow', 'gallery/rainbow2.png');
+        this.load.image('rainbow', 'gallery/water2.png');
         this.load.image('spark0', 'assets/blue.png');
         this.load.image('spark1', 'assets/red.png');
         this.load.plugin('rexclockplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexclockplugin.min.js', true);        
@@ -26,7 +27,7 @@ class Play extends Phaser.Scene {
         this.starfield = this.add.tileSprite(0, 0, 640, 480, 'rainbow').setOrigin(0, 0);
         
         // green UI background
-        this.add.rectangle(0, borderUISize + borderPadding, game.config.width, borderUISize * 2, 0x00FF00).setOrigin(0, 0);
+        //this.add.rectangle(0, borderUISize + borderPadding, game.config.width, borderUISize * 2, 0x00FF00).setOrigin(0, 0);
         // white borders
         this.add.rectangle(0, 0, game.config.width, borderUISize, 0x2b2a33).setOrigin(0, 0);
         this.add.rectangle(0, game.config.height - borderUISize, game.config.width, borderUISize, 0x2b2a33).setOrigin(0, 0);
@@ -35,7 +36,9 @@ class Play extends Phaser.Scene {
         
         // rocket
         this.p1Rocket = new Rocket(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'rocket').setOrigin(0.5, 0);
-        
+        // rocket2 here
+        // rocket holder = p1Rocket for now
+
         // keys/input setup 
         keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
         keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
@@ -142,7 +145,7 @@ class Play extends Phaser.Scene {
             fixedWidth: 0
         }
 
-        console.log(this.add_time);
+        //console.log(this.add_time);
         if (this.clock.now >= (this.game.settings.gameTimer + (this.add_time * 1000))) {
              this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', timeConfig).setOrigin(0.5);
              this.add.text(game.config.width/2, game.config.height/2 + 64, '<- for Menu', timeConfig).setOrigin(0.5);
@@ -160,8 +163,16 @@ class Play extends Phaser.Scene {
 
         this.starfield.tilePositionX -= 16; // was 4
 
+        // rocket switcher
+        // if (this.add_time >= 10) {
+        //     rocket holder = rocket 2
+        // }
+            // else {
+                // rocket holder = rocket 1
+            // }
+
         if (!this.gameOver) {
-            this.p1Rocket.update();
+            this.p1Rocket.update(this.add_time);
             this.ship01.update();
             this.ship02.update();
             this.ship03.update();
@@ -220,8 +231,8 @@ class Play extends Phaser.Scene {
         this.emitter1.setPosition(ship.x, ship.y);
         this.emitter0.explode();
         this.emitter1.explode();
-        ship.reset();
-        ship.alpha = 1;
+        //ship.reset();
+        //ship.alpha = 1;
 
 
         // add points
