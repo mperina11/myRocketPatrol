@@ -1,3 +1,5 @@
+// import ClockPlugin from '/lib/clock.js';
+
 class Play extends Phaser.Scene {
     constructor() {
         super("playScene");
@@ -12,6 +14,8 @@ class Play extends Phaser.Scene {
         // MOD ---------------
         this.load.image('fire eye', 'gallery/fire_eye2.png');
         this.load.image('rainbow', 'gallery/rainbow2.png');
+        this.load.plugin('rexclockplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexclockplugin.min.js', true);        
+
     }
 
     create() {
@@ -71,17 +75,20 @@ class Play extends Phaser.Scene {
         // GAME OVER flag
         this.gameOver = false;
         // 60-second play clock
-        scoreConfig.fixedWidth = 0;
-        this.clock = this.time.delayedCall(game.settings.gameTimer, () => {
-            this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
-            this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or <- for Menu', scoreConfig).setOrigin(0.5);
-            this.gameOver = true;
-        }, null, this);
+        // scoreConfig.fixedWidth = 0;
+        // this.clock = this.time.delayedCall(game.settings.gameTimer, () => {
+        //     this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
+        //     this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or <- for Menu', scoreConfig).setOrigin(0.5);
+        //     this.gameOver = true;
+        // }, null, this);
 
 
-
-        // // get time
+        // create clock
+        this.clock = this.plugins.get('rexclockplugin').add(this);
+        this.clock.start(); // start clock
+        // init time
         this.p1time = 0;
+        this.add_time = 0;
         // // display time
         let timeConfig = {
             fontFamily: 'Courier',
@@ -95,7 +102,7 @@ class Play extends Phaser.Scene {
             },
             fixedWidth: 50
         }
-        
+
         // Time
         this.timeLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding*2, this.p1time, timeConfig);
                 
@@ -103,11 +110,26 @@ class Play extends Phaser.Scene {
 
     update() {
 
-        // if (this.clock.now >= this.game.settings.gameTimer) {
-        //     this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
-        //     this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or <- for Menu', scoreConfig).setOrigin(0.5);
-        //     this.gameOver = true;
-        // }
+        let timeConfig = {
+            fontFamily: 'Courier',
+            fontSize: '28px',
+            backgroundColor: '#000000',
+            color: '#ffffff',
+            align: 'right',
+            padding: {
+            top: 5,
+            bottom: 5,
+            },
+            fixedWidth: 0
+        }
+
+        console.log(this.add_time);
+        if (this.clock.now >= (this.game.settings.gameTimer + (this.add_time * 1000))) {
+             this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', timeConfig).setOrigin(0.5);
+             this.add.text(game.config.width/2, game.config.height/2 + 64, '<- for Menu', timeConfig).setOrigin(0.5);
+             this.timeLeft.text = this.game.settings.gameTimer + (this.add_time * 1000); // set timer to full, time is one step behind
+             this.gameOver = true;
+        }
 
         // check key input for restart
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
@@ -123,11 +145,9 @@ class Play extends Phaser.Scene {
             this.ship03.update();
             this.ship04.update();
             
-        // update time        
-        //this.p1time = this.time.now;
-        //this.p1time = this.clock.now;
-        this.timeLeft.text = this.p1time;
-        console.log(this.p1time);        
+            // update time                   
+            this.p1time = this.clock.now;
+            this.timeLeft.text = this.p1time;           
         }        
 
         // check collisions
@@ -176,9 +196,11 @@ class Play extends Phaser.Scene {
         // add points
         this.p1Score += ship.points;
         this.scoreLeft.text = this.p1Score;
+        
         // add time
-        // this.p1time += ship.points / 10;
-        // this.timeLeft.text = this.p1time;
+        //this.p1time += ship.points / 10;
+        //this.timeLeft.text = this.p1time;
+        this.add_time += ship.points / 10;
 
         // sound
         this.sound.play('sfx_explosion')
