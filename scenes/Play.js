@@ -154,7 +154,7 @@ class Play extends Phaser.Scene {
         // check end of game
         if (this.clock.now >= (this.game.settings.gameTimer + (this.add_time * 1000))) {
              this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', timeConfig).setOrigin(0.5);
-             this.add.text(game.config.width/2, game.config.height/2 + 64, '<- for Menu', timeConfig).setOrigin(0.5);
+             this.add.text(game.config.width/2, game.config.height/2 + 64, '← for Menu', timeConfig).setOrigin(0.5);
              //this.timeLeft.text = this.game.settings.gameTimer + (this.add_time * 1000); // set timer to full, time is one step behind
              this.timeLeft.text = 0;
              this.gameOver = true;
@@ -164,7 +164,7 @@ class Play extends Phaser.Scene {
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
             this.scene.start("menuScene");
         }
-        else if (this.gameOver && this.clock.now >= ((this.game.settings.gameTimer + (this.add_time * 1000)) + 5000)) { // return anyway, 5s
+        else if (this.gameOver && this.clock.now >= ((this.game.settings.gameTimer + (this.add_time * 1000)) + 3000)) { // return anyway, 3s
             this.scene.start("menuScene");
         }
 
