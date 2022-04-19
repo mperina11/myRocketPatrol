@@ -6,17 +6,23 @@ class Play extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('rocket', 'assets/rocket.png');
-        this.load.image('spaceship', 'assets/spaceship.png');
-        this.load.image('starfield', 'assets/starfield.png');
-        this.load.spritesheet('explosion', 'assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
+        // SpriteSheet
+        this.load.spritesheet('explosion', 'assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});        
+        // Images
+        this.load.image('rocket', 'assets/shark1.png');        
+        this.load.image('rocket2', 'assets/shark2.png');
+        //this.load.image('spaceship', 'assets/fish_fast.png');
+        this.load.image('fish_blue', 'assets/fish_blue.png');
+        this.load.image('fish_yellow', 'assets/fish_yellow.png');
+        this.load.image('fish_red', 'assets/fish_red.png');
+        this.load.image('fish_fast', 'assets/fish_fast.png');
 
-        // MOD ---------------
-        this.load.image('rocket2', 'assets/rocket2.png');
+        this.load.image('starfield', 'assets/starfield.png');        
         this.load.image('fire eye', 'gallery/fire_eye2.png');
         this.load.image('rainbow', 'gallery/water2.png');
         this.load.image('spark0', 'assets/blue.png');
         this.load.image('spark1', 'assets/red.png');
+        // Plugin
         this.load.plugin('rexclockplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexclockplugin.min.js', true);        
 
     }
@@ -26,9 +32,7 @@ class Play extends Phaser.Scene {
         // title sprite        
         this.starfield = this.add.tileSprite(0, 0, 640, 480, 'rainbow').setOrigin(0, 0);
         
-        // green UI background
-        //this.add.rectangle(0, borderUISize + borderPadding, game.config.width, borderUISize * 2, 0x00FF00).setOrigin(0, 0);
-        // white borders
+        //  borders
         this.add.rectangle(0, 0, game.config.width, borderUISize, 0x2b2a33).setOrigin(0, 0);
         this.add.rectangle(0, game.config.height - borderUISize, game.config.width, borderUISize, 0x2b2a33).setOrigin(0, 0);
         this.add.rectangle(0, 0, borderUISize, game.config.height, 0x2b2a33).setOrigin(0, 0);
@@ -46,10 +50,10 @@ class Play extends Phaser.Scene {
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
       
         // MY SHIPS
-        this.ship01 = new Spaceship(this, game.config.width + borderUISize*6, borderUISize*5 + borderPadding*2, 'spaceship', 0, 30, 0).setOrigin(0, 0); // 2nd to top
-        this.ship02 = new Spaceship(this, game.config.width + borderUISize*3, borderUISize*6 + borderPadding*4, 'spaceship', 0, 20, 0).setOrigin(0,0);  // 
-        this.ship03 = new Spaceship(this, game.config.width                 , borderUISize*7 + borderPadding*6, 'spaceship', 0, 10, 0).setOrigin(0,0);  // bottom
-        this.ship04 = new Spaceship(this, game.config.width + borderUISize*9, borderUISize*4                  , 'spaceship', 0, 40, 3).setOrigin(0, 0); // special, top
+        this.ship01 = new Spaceship(this, game.config.width + borderUISize*6, borderUISize*5 + borderPadding*2, 'fish_blue', 0, 30, 0).setOrigin(0, 0); // 2nd to top
+        this.ship02 = new Spaceship(this, game.config.width + borderUISize*3, borderUISize*6 + borderPadding*4, 'fish_yellow', 0, 20, 0).setOrigin(0,0);  // 
+        this.ship03 = new Spaceship(this, game.config.width                 , borderUISize*7 + borderPadding*6, 'fish_red', 0, 10, 0).setOrigin(0,0);  // bottom
+        this.ship04 = new Spaceship(this, game.config.width + borderUISize*9, borderUISize*4                  , 'fish_fast', 0, 40, 3).setOrigin(0, 0); // special, top
         
 
         // create anim
@@ -183,7 +187,7 @@ class Play extends Phaser.Scene {
             this.ship04.update();
             
             // update time                               
-            this.p1time = this.game.settings.gameTimer - this.clock.now;            
+            this.p1time = (this.game.settings.gameTimer + (this.add_time * 1000)) - this.clock.now;                      
             this.timeLeft.text = this.p1time;           
         }       
 
