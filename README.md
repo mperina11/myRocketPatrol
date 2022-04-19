@@ -1,2 +1,2 @@
 # myRocketPatrol
-Modded version of Rocket Patrol
+Rocket Patrol turned Shark Patrol
