@@ -37,9 +37,7 @@ class Play extends Phaser.Scene {
         // rocket
         this.p1Rocket = new Rocket(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'rocket').setOrigin(0.5, 0);
         // rocket2 here
-        this.p2Rocket = new Rocket(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'rocket2').setOrigin(0.5, 0);
-        // rocket holder
-        this.rocket_holder = new Rocket(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'rocket').setOrigin(0.5, 0);
+        this.p2Rocket = new Rocket(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'rocket2').setOrigin(0.5, -10);        
 
         // keys/input setup 
         keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
@@ -111,7 +109,7 @@ class Play extends Phaser.Scene {
         this.clock = this.plugins.get('rexclockplugin').add(this);
         this.clock.start(); // start clock
         // init time
-        this.p1time = 0;
+        this.p1time = this.game.settings.gameTimer;
         this.add_time = 0;
         this.to_ten = 0; // track 0-10 points
         this.rocket_flag = 0; // track rocket in use, 0=1, 1=2
@@ -149,11 +147,12 @@ class Play extends Phaser.Scene {
             fixedWidth: 0
         }
 
-        //console.log(this.add_time);
+        // check end of game
         if (this.clock.now >= (this.game.settings.gameTimer + (this.add_time * 1000))) {
              this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', timeConfig).setOrigin(0.5);
              this.add.text(game.config.width/2, game.config.height/2 + 64, '<- for Menu', timeConfig).setOrigin(0.5);
-             this.timeLeft.text = this.game.settings.gameTimer + (this.add_time * 1000); // set timer to full, time is one step behind
+             //this.timeLeft.text = this.game.settings.gameTimer + (this.add_time * 1000); // set timer to full, time is one step behind
+             this.timeLeft.text = 0;
              this.gameOver = true;
         }
 
@@ -167,46 +166,42 @@ class Play extends Phaser.Scene {
 
         this.starfield.tilePositionX -= 16; // was 4
 
-        // rocket switcher
-        console.log(this.to_ten);
-        if (this.to_ten >= 25) {
-            this.rocket_holder = this.p2Rocket;
+        // rocket switcher        
+        if (this.to_ten >= 10) {
+            this.p1Rocket.setOrigin(0.5, -10);
+            this.p1Rocket = this.p2Rocket;
+            this.p1Rocket.setOrigin(0.5, 0);
             this.to_ten = 0; // reset
             this.rocket_flag = 1;
         }
-        // else { // switch back
-        //     this.rocket_holder = this.p1Rocket;
-        //     this.rocket_flag = 0;
-        // }
-
             
         if (!this.gameOver) {
-            this.rocket_holder.update(this.rocket_flag);
+            this.p1Rocket.update(this.rocket_flag);
             this.ship01.update();
             this.ship02.update();
             this.ship03.update();
             this.ship04.update();
             
-            // update time                   
-            this.p1time = this.clock.now;
+            // update time                               
+            this.p1time = this.game.settings.gameTimer - this.clock.now;            
             this.timeLeft.text = this.p1time;           
         }       
 
         // check collisions
-        if(this.checkCollision(this.rocket_holder, this.ship04)) {
-            this.rocket_holder.reset();
+        if(this.checkCollision(this.p1Rocket, this.ship04)) {
+            this.p1Rocket.reset();
             this.shipExplode(this.ship04);
         }
-        if(this.checkCollision(this.rocket_holder, this.ship03)) {
-            this.rocket_holder.reset();
+        if(this.checkCollision(this.p1Rocket, this.ship03)) {
+            this.p1Rocket.reset();
             this.shipExplode(this.ship03);
         }
-        if (this.checkCollision(this.rocket_holder, this.ship02)) {
-            this.rocket_holder.reset();
+        if (this.checkCollision(this.p1Rocket, this.ship02)) {
+            this.p1Rocket.reset();
             this.shipExplode(this.ship02);
         }
-        if (this.checkCollision(this.rocket_holder, this.ship01)) {
-            this.rocket_holder.reset();
+        if (this.checkCollision(this.p1Rocket, this.ship01)) {
+            this.p1Rocket.reset();
             this.shipExplode(this.ship01);
         }
     }
